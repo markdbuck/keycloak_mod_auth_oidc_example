@@ -12,6 +12,6 @@ COPY ./html /var/www/html
 
 CMD apache2ctl -D FOREGROUND
 
-EXPOSE 80
+EXPOSE 8080
 
 COPY ./000-default.conf /etc/apache2/sites-enabled/000-default.conf
