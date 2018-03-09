@@ -10,7 +10,8 @@ RUN a2enmod auth_openidc
 
 COPY ./html /var/www/html
 
-CMD apache2ctl -D FOREGROUND
+# CMD apache2ctl -D FOREGROUND
+CMD apache2ctl start
 
 EXPOSE 8080
 
