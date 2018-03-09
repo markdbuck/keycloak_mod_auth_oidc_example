@@ -11,12 +11,10 @@ RUN a2enmod auth_openidc
 COPY ./html /var/www/html
 
 # CMD apache2ctl -D FOREGROUND
-CMD apache2ctl start
+CMD apache2ctl start && tail -f /dev/null
 
 EXPOSE 8080
 
 COPY ./000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
 COPY ./ports.conf /etc/apache2/ports.conf
-
-tail -f /dev/null
