@@ -24,7 +24,7 @@ ADD 000-default.conf /etc/httpd/conf.d/
 
 RUN chmod -R 770 /etc/httpd && chown -R :root /run/httpd && chmod -R 770 /run/httpd && chmod -R 770 /var/log/httpd
 
-RUN sed -i 's/Listen 80/Listen 0.0.0.0:80/' /etc/httpd/conf/httpd.conf
+RUN sed -i 's/Listen 80/Listen 0.0.0.0:8080/' /etc/httpd/conf/httpd.conf
 
 RUN sed -i 's/Listen 443 https/Listen 8443 https/' /etc/httpd/conf.d/ssl.conf
 
@@ -33,6 +33,14 @@ RUN sed -i 's/User apache/User default/' /etc/httpd/conf/httpd.conf
 RUN sed -i 's/Group apache/Group root/' /etc/httpd/conf/httpd.conf
 
 RUN useradd default -g root
+
+RUN chmod g+rw /etc/pki/tls/certs/localhost.crt
+
+RUN chmod g+rw /etc/pki/tls/private/localhost.key
+
+COPY ./html /var/www/html
+
+RUN chmod g+rwx /var/www
 
 USER 1000
 
