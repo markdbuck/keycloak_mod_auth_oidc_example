@@ -40,7 +40,7 @@ RUN chmod g+rw /etc/pki/tls/private/localhost.key
 
 COPY ./html /var/www/html
 
-RUN chmod g+rwx /var/www
+RUN chmod -R g+rwx /var/www
 
 USER 1000
 
