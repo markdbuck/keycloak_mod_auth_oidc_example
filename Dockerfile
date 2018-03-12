@@ -1,4 +1,6 @@
-FROM centos:centos7
+# FROM centos:centos7
+FROM centos/php-71-centos7
+USER root
  
 # CentOS Linux release 7.0.1406 (Core)
 
@@ -12,38 +14,41 @@ ENV CJOSE_PKG cjose-${CJOSE_VERSION}-1.el7.centos.x86_64.rpm
 RUN curl -s -L -o ~/${CJOSE_PKG} https://mod-auth-openidc.org/download/${CJOSE_PKG}
 RUN ${CMD_PREFIX} yum localinstall -y ~/${CJOSE_PKG}
 
+RUN yum install -y hiredis
+
 ENV MOD_AUTH_OPENIDC_VERSION 2.3.4rc2
 ENV MOD_AUTH_OPENIDC_PKG mod_auth_openidc-${MOD_AUTH_OPENIDC_VERSION}-1.el7.centos.x86_64.rpm
 RUN curl -s -L -o ~/${MOD_AUTH_OPENIDC_PKG} https://mod-auth-openidc.org/download/${MOD_AUTH_OPENIDC_PKG}
-RUN ${CMD_PREFIX} yum localinstall -y ~/${MOD_AUTH_OPENIDC_PKG}
+# RUN ${CMD_PREFIX} yum localinstall -y ~/${MOD_AUTH_OPENIDC_PKG}
+RUN rpm -ivh --nodeps ~/${MOD_AUTH_OPENIDC_PKG}
 
-RUN yum install -y mod_ssl
+# RUN yum install -y mod_ssl
 
-ADD 000-default.conf /etc/httpd/conf.d/
+# ADD 000-default.conf /etc/httpd/conf.d/
 # RUN /usr/sbin/httpd 
 
-RUN chmod -R 770 /etc/httpd && chown -R :root /run/httpd && chmod -R 770 /run/httpd && chmod -R 770 /var/log/httpd
+# RUN chmod -R 770 /etc/httpd && chown -R :root /run/httpd && chmod -R 770 /run/httpd && chmod -R 770 /var/log/httpd
 
-RUN sed -i 's/Listen 80/Listen 0.0.0.0:8080/' /etc/httpd/conf/httpd.conf
+# RUN sed -i 's/Listen 80/Listen 0.0.0.0:8080/' /etc/httpd/conf/httpd.conf
 
-RUN sed -i 's/Listen 443 https/Listen 8443 https/' /etc/httpd/conf.d/ssl.conf
+# RUN sed -i 's/Listen 443 https/Listen 8443 https/' /etc/httpd/conf.d/ssl.conf
 
-RUN sed -i 's/User apache/User default/' /etc/httpd/conf/httpd.conf
+# RUN sed -i 's/User apache/User default/' /etc/httpd/conf/httpd.conf
 
-RUN sed -i 's/Group apache/Group root/' /etc/httpd/conf/httpd.conf
+# RUN sed -i 's/Group apache/Group root/' /etc/httpd/conf/httpd.conf
 
-RUN useradd default -g root
+# RUN useradd default -g root
 
-RUN chmod g+rw /etc/pki/tls/certs/localhost.crt
+# RUN chmod g+rw /etc/pki/tls/certs/localhost.crt
 
-RUN chmod g+rw /etc/pki/tls/private/localhost.key
+# RUN chmod g+rw /etc/pki/tls/private/localhost.key
 
-COPY ./html /var/www/html
+COPY ./html /opt/app-root/src
 
-RUN chmod -R g+rwx /var/www
+RUN chmod -R g+rw /opt/app-root/src
 
 USER 1000
 
 # CMD /usr/sbin/httpd
 
-CMD tail -f /dev/null
+# CMD tail -f /dev/null
