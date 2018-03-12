@@ -1,38 +1,51 @@
-# FROM registry.access.redhat.com/rhscl/php-71-rhel7:1-12
-FROM centos:6.9
+FROM centos/httpd-24-centos7
+ 
+# CentOS Linux release 7.0.1406 (Core)
 
 USER root
 
-RUN rpm -ivh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+# RUN rpm --import http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
+# RUN rpm -ihv http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
 
-RUN yum install -y httpd mod_ssl
+# Save the RH httpd directories
+RUN mkdir -p /save/etc && cp -rfp /etc/httpd /save/etc
+RUN mkdir -p /save/lib64 && cp -rfp /opt/rh/httpd24/root/usr/lib64/httpd /save/lib64/
+RUN mkdir -p /save/run && cp -rfp /opt/rh/httpd24/root/var/run/httpd /save/run/
+RUN mkdir -p /save/log && cp -rfp /var/log/httpd24 /save/log/
 
-RUN yum install -y curl jansson
+RUN yum remove -y httpd24-httpd-2.4.27-8.el7.x86_64
 
-RUN curl -s -L -o ~/hiredis-0.12.1-1.sdl6.x86_64.rpm http://springdale.math.ias.edu/data/puias/unsupported/6/x86_64/hiredis-0.12.1-1.sdl6.x86_64.rpm
-RUN yum localinstall -y ~/hiredis-0.12.1-1.sdl6.x86_64.rpm
+RUN yum update -y
 
-RUN curl -s -L -o ~/cjose-0.5.1-1.el6.x86_64.rpm https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.3.0/cjose-0.5.1-1.el6.x86_64.rpm
-RUN yum localinstall -y ~/cjose-0.5.1-1.el6.x86_64.rpm
+ENV CJOSE_VERSION 0.5.1
+ENV CJOSE_PKG cjose-${CJOSE_VERSION}-1.el7.centos.x86_64.rpm
+RUN curl -s -L -o ~/${CJOSE_PKG} https://mod-auth-openidc.org/download/${CJOSE_PKG}
+RUN ${CMD_PREFIX} yum localinstall -y ~/${CJOSE_PKG}
 
-# Download mod_auth_openidc
-RUN curl -s -L -o ~/mod_auth_openidc-2.3.3-1.el6.x86_64.rpm https://github.com/zmartzone/mod_auth_openidc/releases/download/v2.3.3/mod_auth_openidc-2.3.3-1.el6.x86_64.rpm
-RUN yum localinstall -y ~/mod_auth_openidc-2.3.3-1.el6.x86_64.rpm
+ENV MOD_AUTH_OPENIDC_VERSION 2.3.4rc2
+ENV MOD_AUTH_OPENIDC_PKG mod_auth_openidc-${MOD_AUTH_OPENIDC_VERSION}-1.el7.centos.x86_64.rpm
+RUN curl -s -L -o ~/${MOD_AUTH_OPENIDC_PKG} https://mod-auth-openidc.org/download/${MOD_AUTH_OPENIDC_PKG}
+RUN ${CMD_PREFIX} yum localinstall -y ~/${MOD_AUTH_OPENIDC_PKG}
 
-# Enable apache module mod_auth_openidc
-# RUN a2enmod auth_openidc
+RUN yum install -y mod_ssl
 
-# COPY ./html /var/www/html
+# Restore the RH httpd directories
+RUN cp /etc/httpd/conf.modules.d/10-auth_openidc.conf /save/etc/httpd/conf.modules.d/ && rm -rf /etc/httpd && cp -rfp /save/etc/httpd /etc/ && ln -s /etc/httpd /opt/rh/httpd24/root/etc/httpd
+RUN cp -rfp /save/lib64/httpd /opt/rh/httpd24/root/usr/lib64
+RUN cp -rfp /save/run/httpd /opt/rh/httpd24/root/var/run
+RUN cp -rfp /save/log/httpd24 /var/log
+RUN rm -rf /save
 
-# CMD apache2ctl -DFOREGROUND
+# ADD 000-default.conf /etc/httpd/conf.d/
+# RUN /usr/sbin/httpd && curl -v http://localhost/protected/index.php 2>&1 | grep "Location:" | grep "accounts.google.com/o/oauth2/auth"
 
-# EXPOSE 8080
+# RUN yum install -y httpd mod_ssl
 
-# COPY ./000-default.conf /etc/apache2/sites-enabled/000-default.conf
+# RUN yum install -y curl jansson
 
-# COPY ./ports.conf /etc/apache2/ports.conf
+RUN chmod -R 777 /run/httpd
 
 USER 1000
 
-CMD tail -f /dev/null
+# CMD tail -f /dev/null
 
