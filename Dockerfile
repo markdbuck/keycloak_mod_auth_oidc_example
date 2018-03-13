@@ -45,7 +45,7 @@ RUN rpm -ivh --nodeps ~/${MOD_AUTH_OPENIDC_PKG}
 
 # COPY ./html /opt/app-root/src
 
-# RUN chmod -R g+rw /opt/app-root/src
+RUN chmod -R g+rw /opt/app-root/src
 
 USER 1000
 
