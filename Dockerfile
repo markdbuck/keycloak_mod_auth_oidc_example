@@ -22,6 +22,8 @@ RUN curl -s -L -o ~/${MOD_AUTH_OPENIDC_PKG} https://mod-auth-openidc.org/downloa
 # RUN ${CMD_PREFIX} yum localinstall -y ~/${MOD_AUTH_OPENIDC_PKG}
 RUN rpm -ivh --nodeps ~/${MOD_AUTH_OPENIDC_PKG}
 
+RUN cp -p /usr/lib64/httpd/modules/mod_auth_openidc.so /opt/rh/httpd24/root/etc/httpd/modules/
+
 # RUN yum install -y mod_ssl
 
 # ADD 000-default.conf /etc/httpd/conf.d/
