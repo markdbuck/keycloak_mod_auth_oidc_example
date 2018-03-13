@@ -1,7 +1,7 @@
 <html>
   <body>
     <p>
-        <a href="demo/index.php">Access mod_oidc protected page</a><br/>
+        <a href="protected/index.php">Access mod_oidc protected page</a><br/>
         <a href="info.php">phpinfo</a>
     <p/>
     
