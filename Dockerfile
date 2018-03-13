@@ -43,9 +43,9 @@ RUN rpm -ivh --nodeps ~/${MOD_AUTH_OPENIDC_PKG}
 
 # RUN chmod g+rw /etc/pki/tls/private/localhost.key
 
-COPY ./html /opt/app-root/src
+# COPY ./html /opt/app-root/src
 
-RUN chmod -R g+rw /opt/app-root/src
+# RUN chmod -R g+rw /opt/app-root/src
 
 USER 1000
 
