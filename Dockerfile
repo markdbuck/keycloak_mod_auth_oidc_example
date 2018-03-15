@@ -2,8 +2,6 @@
 FROM centos/php-71-centos7
 USER root
  
-# CentOS Linux release 7.0.1406 (Core)
-
 RUN rpm --import http://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-7
 RUN rpm -ihv http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
 
@@ -20,37 +18,15 @@ ENV MOD_AUTH_OPENIDC_VERSION 2.3.4rc2
 ENV MOD_AUTH_OPENIDC_PKG mod_auth_openidc-${MOD_AUTH_OPENIDC_VERSION}-1.el7.centos.x86_64.rpm
 RUN curl -s -L -o ~/${MOD_AUTH_OPENIDC_PKG} https://mod-auth-openidc.org/download/${MOD_AUTH_OPENIDC_PKG}
 # RUN ${CMD_PREFIX} yum localinstall -y ~/${MOD_AUTH_OPENIDC_PKG}
+# RUN rpm command so can skip dependencies
 RUN rpm -ivh --nodeps ~/${MOD_AUTH_OPENIDC_PKG}
 
 RUN cp -p /usr/lib64/httpd/modules/mod_auth_openidc.so /opt/rh/httpd24/root/etc/httpd/modules/
 
 # RUN yum install -y mod_ssl
 
-# ADD 000-default.conf /etc/httpd/conf.d/
-# RUN /usr/sbin/httpd 
-
-# RUN chmod -R 770 /etc/httpd && chown -R :root /run/httpd && chmod -R 770 /run/httpd && chmod -R 770 /var/log/httpd
-
-# RUN sed -i 's/Listen 80/Listen 0.0.0.0:8080/' /etc/httpd/conf/httpd.conf
-
-# RUN sed -i 's/Listen 443 https/Listen 8443 https/' /etc/httpd/conf.d/ssl.conf
-
-# RUN sed -i 's/User apache/User default/' /etc/httpd/conf/httpd.conf
-
-# RUN sed -i 's/Group apache/Group root/' /etc/httpd/conf/httpd.conf
-
-# RUN useradd default -g root
-
-# RUN chmod g+rw /etc/pki/tls/certs/localhost.crt
-
-# RUN chmod g+rw /etc/pki/tls/private/localhost.key
-
-# COPY ./html /opt/app-root/src
-
+ADD 000-default.conf /etc/httpd/conf.d/
 RUN chmod -R g+rw /opt/app-root/src
 
 USER 1000
 
-# CMD /usr/sbin/httpd
-
-# CMD tail -f /dev/null
