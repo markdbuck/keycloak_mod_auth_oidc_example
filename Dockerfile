@@ -25,7 +25,7 @@ RUN cp -p /usr/lib64/httpd/modules/mod_auth_openidc.so /opt/rh/httpd24/root/etc/
 
 # RUN yum install -y mod_ssl
 
-ADD 000-default.conf /etc/httpd/conf.d/
+# ADD 000-default.conf /etc/httpd/conf.d/
 RUN chmod -R g+rw /opt/app-root/src
 
 USER 1000
